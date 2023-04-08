@@ -13,7 +13,9 @@ def listener(client):
             if msg.split("~#->")[0] == "usr":
                 add_client(client, msg)
         except socket.error as e:
-            print(e)
+            client.close()
+            print("connection Closed")
+            break
         
 
 def add_client(client, msg):
@@ -36,6 +38,9 @@ if __name__ =="__main__":
     server.listen(2)
 
     while True:
-        client, addr = server.accept()
-        print(f"Connection Established {addr}")
-        threading.Thread(target=listener, args=(client, )).start()
+        try:
+            client, addr = server.accept()
+            print(f"Connection Established {addr}")
+            threading.Thread(target=listener, args=(client, )).start()
+        except:
+            pass
