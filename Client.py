@@ -54,7 +54,7 @@ def connect_client(UserName,ip,port):
             threading.Thread(target=client_sender, args=(client, )).start()
             break
         except:
-            print("Error")
+            print("Error") #Check
     
     
 
