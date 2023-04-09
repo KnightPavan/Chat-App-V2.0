@@ -1,10 +1,10 @@
 import socket
 import threading
 
-IP = "localhost"
+IP = "192.168.1.10"
 PORT = 0
 CLIENT_LIST=[]
-SERVER_IP = "localhost"
+SERVER_IP = "117.96.216.34"
 SERVER_PORT = 1234
 
 def server_listener(host):
@@ -29,6 +29,7 @@ def option_select(msg):
     lst = [user.split(",") for user in lst]
     # print(lst)
     print("Active Users")
+    print(lst)
     for user in lst:
         CLIENT_LIST.append([user[0],user[1],user[2]])
         print(user[0])
@@ -60,9 +61,9 @@ def connect_client(UserName,ip,port):
 def transfer(client, msg):
     client.send(msg.encode())
 
-def initial_exchange(host, info):
+def initial_exchange(host, info, port):
     userName = input("Enter your username : ")
-    msg = "usr"+"~#->"+ f"{userName}"+","+ f'{info[0]}'+","+ f'{info[1]}'
+    msg = "usr"+"~#->"+ f"{userName}"+","+ f'{info[0]}'+","+ f'{port}'
     transfer(host,msg)
 
 if __name__ == "__main__":
@@ -70,16 +71,18 @@ if __name__ == "__main__":
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         host.connect((SERVER_IP, SERVER_PORT))
+        addr = host.recv(2048).decode('utf-8')
+        print(addr)
         print("Connection TO Server Established")
     except:
         print("Unsuccessful")
     
-    server.bind((IP, PORT))
+    server.bind((IP, int(addr.split(":")[1])))
     print("Bind Success")
     info = server.getsockname()
     # print(info)
     threading.Thread(target=server_listener, args=(host, )).start()
-    initial_exchange(host, info)
+    initial_exchange(host, info, int(addr.split(":")[1]))
     server.listen(2)
     while True:
         try:

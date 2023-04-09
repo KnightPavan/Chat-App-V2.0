@@ -1,7 +1,7 @@
 import socket
 import threading
 
-IP = "localhost"
+IP = "192.168.1.10"
 PORT = 1234
 LIMIT = 2
 CLIENTS = []
@@ -23,7 +23,8 @@ def add_client(client, msg):
     userName = msg[0]
     ip = msg[1]
     port = msg[2]
-    CLIENTS.append([userName,ip,port])
+    CLIENTS.append([userName,ip
+                    ,port])
     client_list ='lst'+"~#->" +';'.join([f'{user[0]},{user[1]},{user[2]}' for user in CLIENTS])
     client.send(client_list.encode())
     
@@ -40,6 +41,8 @@ if __name__ =="__main__":
     while True:
         try:
             client, addr = server.accept()
+            msg = f"{addr[0]}:{addr[1]}"
+            client.sendall(msg.encode())
             print(f"Connection Established {addr}")
             threading.Thread(target=listener, args=(client, )).start()
         except:
