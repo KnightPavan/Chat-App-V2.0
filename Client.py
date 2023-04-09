@@ -1,10 +1,10 @@
 import socket
 import threading
 
-IP = "192.168.1.10"
+IP = "192.168.1.10" #change
 PORT = 0
 CLIENT_LIST=[]
-SERVER_IP = "117.96.216.34"
+SERVER_IP = "192.168.1.10"
 SERVER_PORT = 1234
 
 def server_listener(host):
@@ -63,7 +63,7 @@ def transfer(client, msg):
 
 def initial_exchange(host, info, port):
     userName = input("Enter your username : ")
-    msg = "usr"+"~#->"+ f"{userName}"+","+ f'{info[0]}'+","+ f'{port}'
+    msg = "usr"+"~#->"+ f"{userName}"+","+ f'{IP}'+","+ f'{port}'
     transfer(host,msg)
 
 if __name__ == "__main__":
@@ -76,7 +76,8 @@ if __name__ == "__main__":
         print("Connection TO Server Established")
     except:
         print("Unsuccessful")
-    
+    print(host)
+    print(server)
     server.bind((IP, int(addr.split(":")[1])))
     print("Bind Success")
     info = server.getsockname()
@@ -93,6 +94,7 @@ if __name__ == "__main__":
             break
         except:
             pass
+    
         
 
     
