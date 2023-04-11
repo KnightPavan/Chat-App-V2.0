@@ -28,8 +28,19 @@ def add_client(client, msg):
     client_list ='lst'+"~#->" +';'.join([f'{user[0]},{user[1]},{user[2]}' for user in CLIENTS])
     client.send(client_list.encode())
     
+
 if __name__ =="__main__":
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    new = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        new.bind((IP,1234))
+        new.connect(("122.178.185.145",9999))
+        print(new)
+    except:
+        print("done")
+        print(new)
+        new.close()
+    new.close()
     try:
         server.bind((IP,PORT))
         print("Bind Success")

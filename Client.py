@@ -4,8 +4,9 @@ import threading
 IP = "192.168.1.10" #change
 PORT = 0
 CLIENT_LIST=[]
-SERVER_IP = "192.168.1.10"
+SERVER_IP = "122.178.185.145"
 SERVER_PORT = 1234
+pub_ip = "122.178.185.145"
 
 def server_listener(host):
     while True:
@@ -70,7 +71,8 @@ if __name__ == "__main__":
     host = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        host.connect((SERVER_IP, SERVER_PORT))
+        host.bind(("192.168.1.10",9999))
+        host.connect(("122.178.185.145", 1234))
         addr = host.recv(2048).decode('utf-8')
         print(addr)
         print("Connection TO Server Established")
