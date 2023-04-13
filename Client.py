@@ -1,101 +1,63 @@
 import socket
 import threading
 
-IP = "192.168.1.10" #change
-PORT = 0
-CLIENT_LIST=[]
-SERVER_IP = "122.178.185.145"
-SERVER_PORT = 1234
-pub_ip = "122.178.185.145"
+class Client:
+    def __init__(self, ip, port):
+        self.IP = ip
+        self.PORT = port
+        self.host = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.username = ""
 
-def server_listener(host):
-    while True:
-        msg = host.recv(10000).decode('utf-8')
-        if msg.split("~#->")[0] == "lst":
-            option_select(msg[7:])
-
-def client_listner(client):
-    while True:
-        try:
-            print(client.recv(2048).decode('utf-8'))
-        except:
-            pass
-def client_sender(client):
-    while True:
-        msg= input(">>>")
-        transfer(client, msg)
-
-def option_select(msg):
-    lst = msg.split(";")
-    lst = [user.split(",") for user in lst]
-    # print(lst)
-    print("Active Users")
-    print(lst)
-    for user in lst:
-        CLIENT_LIST.append([user[0],user[1],user[2]])
-        print(user[0])
-    print("0 : Wait for Message")
-    User = input("Enter the user you want connect : ")
-    if (User == "0"):
-        print("Waiting for connection")
-        pass
-    else:
-        for user in lst:
-            if user[0] == User:
-                connect_client(user[0],user[1],int(user[2]))
+    def send(self,msg):
+        print("MSG Sent")
+        self.host.send(msg.encode())
     
-def connect_client(UserName,ip,port):
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print(port)
-    while True:
-        try:
-            client.connect((ip,port))
-            print("connection Established with ",UserName)
-            threading.Thread(target=client_listner, args=(client, )).start()
-            threading.Thread(target=client_sender, args=(client, )).start()
-            break
-        except:
-            print("Error") #Check
+    def listen(self):
+        while True:
+            try:
+                msg = self.host.recv(2048).decode('utf-8')
+                self.msg_filter(msg)
+            except:
+                pass
+    def msg_filter(self, msg):
+        msg = msg.split("~#->")
+        if msg[0] == "lst":
+            self.user_list(msg[1])
+        elif msg[0] == "Sermsg":
+            print(msg[1])
+
+    def user_list(self, list):
+        list = list.split(";")
+        print("List of Users on the server")
+        for usr in list:
+            print(usr)
+        print("0 : To reload user list")
+        msg = input("Enter the username : ")
+        msg = "usrlst" +"~#->"+ msg
+        self.send(msg)
+        
+
+    def initiate(self):
+        while True:
+            try:
+                self.host.connect((self.IP, self.PORT))
+                threading.Thread(target=self.listen, args=()).start()
+                self.send(self.initialize())
+                
+                break
+            except:
+                pass
+
+    def initialize(self):
+        self.username = input("USERNAME : ") 
+        return "usr" + "~#->" + self.username
     
-    
-
-def transfer(client, msg):
-    client.send(msg.encode())
-
-def initial_exchange(host, info, port):
-    userName = input("Enter your username : ")
-    msg = "usr"+"~#->"+ f"{userName}"+","+ f'{IP}'+","+ f'{port}'
-    transfer(host,msg)
-
 if __name__ == "__main__":
-    host = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        host.bind(("192.168.1.10",9999))
-        host.connect(("122.178.185.145", 1234))
-        addr = host.recv(2048).decode('utf-8')
-        print(addr)
-        print("Connection TO Server Established")
-    except:
-        print("Unsuccessful")
-    print(host)
-    print(server)
-    server.bind((IP, int(addr.split(":")[1])))
-    print("Bind Success")
-    info = server.getsockname()
-    # print(info)
-    threading.Thread(target=server_listener, args=(host, )).start()
-    initial_exchange(host, info, int(addr.split(":")[1]))
-    server.listen(2)
-    while True:
-        try:
-            client, addr = server.accept()
-            print("Accetped to message")
-            threading.Thread(target=client_listner, args=(client, )).start()
-            threading.Thread(target=client_sender, args=(client, )).start()
-            break
-        except:
-            pass
+    IP = "192.168.1.10"
+    PORT = 1234
+    client = Client(IP, PORT) 
+    client.initiate()
+
     
         
 
