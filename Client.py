@@ -7,6 +7,7 @@ class Client:
         self.PORT = port
         self.host = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.username = ""
+        self.dm = ""
 
     def send(self,msg):
         print("MSG Sent")
@@ -33,6 +34,9 @@ class Client:
             print(usr)
         print("0 : To reload user list")
         msg = input("Enter the username : ")
+        if msg != "0":
+            self.dm = msg
+            threading.Thread(target=None).start()
         msg = "usrlst" +"~#->"+ msg
         self.send(msg)
         

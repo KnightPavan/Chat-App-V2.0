@@ -10,6 +10,7 @@ class Server:
         self.PORT = port
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.clients = []
+        self.users = []
         
     def listen(self,client,addr):
         peer = None
@@ -29,6 +30,16 @@ class Server:
             self.send(client,self.list_parser())
         if msg[0] == "usrlst":
             self.list_handler(client,msg[1])
+        if msg[0] == "dm":
+            self.dm(msg[1])
+
+    def dm(self, msg):
+        user = msg.split(">")[0]
+        frm = msg.split("<")[0]
+        msg = f"[{frm}]"+msg.split("<")[1]
+        for i in range (0, len(self.clients)):
+            if self.clients[i] == user:
+                self.send(self.users[i], )
 
     def list_handler(self, client, username):
         if username == "0":
